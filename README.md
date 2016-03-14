@@ -1,20 +1,22 @@
 #multireducer
 
-[![NPM Version](https://img.shields.io/npm/v/multireducer.svg?style=flat-square)](https://www.npmjs.com/package/multireducer) 
+[![NPM Version](https://img.shields.io/npm/v/multireducer.svg?style=flat-square)](https://www.npmjs.com/package/multireducer)
 [![NPM Downloads](https://img.shields.io/npm/dm/multireducer.svg?style=flat-square)](https://www.npmjs.com/package/multireducer)
 [![Build Status](https://img.shields.io/travis/erikras/multireducer/master.svg?style=flat-square)](https://travis-ci.org/erikras/multireducer)
 
 `multireducer` is a utility to wrap many copies of a single Redux reducer into a single key-based reducer.
 
+(Fork from https://www.npmjs.com/package/multireducer).
+
 ## Installation
 
 ```
-npm install --save multireducer
+npm install --save multireducer-immutable
 ```
 
 ## Why?
 
-There are times when writing a Redux application where you might find yourself needing multiple copies of the same reducer. For example, you might need more than one list of the same type of object to be displayed. Rather than make a big reducer to handle list `A`, `B`, and `C`, and have action creators either in the form `addToB(item)` or `addToList('B', item)`, it would be easier to write one "list" reducer, which is easier to write, reason about, and test, with a simpler `add(item)` API. 
+There are times when writing a Redux application where you might find yourself needing multiple copies of the same reducer. For example, you might need more than one list of the same type of object to be displayed. Rather than make a big reducer to handle list `A`, `B`, and `C`, and have action creators either in the form `addToB(item)` or `addToList('B', item)`, it would be easier to write one "list" reducer, which is easier to write, reason about, and test, with a simpler `add(item)` API.
 
 However, Redux won't let you do this:
 
@@ -37,16 +39,17 @@ This is where `multireducer` comes in. Multireducer lets you mount the same redu
 **STEP 1:** First you will need to wrap the reducer you want to copy.
 
 ```javascript
-import multireducer from 'multireducer';
+import multireducer from 'multireducer-immutable';
+import {fromJS} from 'immutable';
 import list from './reducers/list';
 
 const reducer = combineReducers({
-  listCollection: multireducer({ // can be mounted as any property. Later you can use this prop to access state slices in mapStateToProps
+  listCollection: multireducer(fromJS({ // can be mounted as any property. Later you can use this prop to access state slices in mapStateToProps
     proposed  : list,
     scheduled : list,
     active    : list,
     complete  : list
-  })
+  }))
 });
 ```
 
@@ -62,21 +65,21 @@ const reducer = combineReducers({
 
 ```javascript
 import React, {Component, PropTypes} from 'react';
-import {connectMultireducer} from 'multireducer';
+import {connectMultireducer} from 'multireducer-immutable';
 import {add, remove} from './actions/list';
 
 class ListComponent extends Component {
   static propTypes = {
     list: PropTypes.array.isRequired
   }
-  
+
   render() {
     const {add, list, remove} = this.props;
     return (
       <div>
         <button onClick={() => add('New Item')}>Add</button>
         <ul>
-          {list.map((item, index) => 
+          {list.map((item, index) =>
             <li key={index}>
               {item}
               (<button onClick={() => remove(item)}>X</button>)
@@ -179,10 +182,10 @@ Creates a higher order component decorator, much like [`react-redux`](https://gi
 ##### -`dispatch : String`
 > A 'global' dispatch you take from `mapDispatchToProps`
 
-Example 
+Example
 ```javascript
 import { bindActionCreators } from 'redux';
-import { multireducerBindActionCreators } from 'multireducer';
+import { multireducerBindActionCreators } from 'multireducer-immutable';
 import * as BaseListActions from 'redux-base/modules/list';
 import * as ProposedListActions from 'redux-base/modules/proposedList';
 

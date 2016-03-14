@@ -1,11 +1,11 @@
 {
-  "name": "multireducer",
-  "version": "2.0.0",
+  "name": "multireducer-immutable",
+  "version": "2.0.1",
   "description": "A utility to wrap many copies of a single Redux reducer into a single key-based reducer.",
   "main": "./lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/erikras/multireducer"
+    "url": "https://github.com/Quoin/multireducer.git"
   },
   "scripts": {
     "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
